@@ -6,9 +6,7 @@
   <title>AI Ticket Classifier</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -26,6 +24,8 @@
       justify-content: space-between;
       padding: 0 34px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+      position: relative;
+      z-index: 20;
     }
 
     .brand {
@@ -47,10 +47,74 @@
       font-size: 22px;
     }
 
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
     .topnote {
       font-size: 14px;
       color: #cbd5e1;
       font-weight: 700;
+    }
+
+    .language-box {
+      position: relative;
+    }
+
+    .language-button {
+      background: #1f2937;
+      color: white;
+      border: 1px solid #374151;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .language-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 48px;
+      width: 310px;
+      background: white;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.20);
+      overflow: hidden;
+    }
+
+    .language-menu.open {
+      display: block;
+    }
+
+    .language-search {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-bottom: 1px solid #e5e7eb;
+      outline: none;
+      font-size: 14px;
+    }
+
+    .language-list {
+      max-height: 330px;
+      overflow-y: auto;
+    }
+
+    .language-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .language-item:hover {
+      background: #f8fafc;
+      color: #ff9900;
     }
 
     .layout {
@@ -59,9 +123,7 @@
       padding: 0 22px;
     }
 
-    .hero {
-      margin-bottom: 28px;
-    }
+    .hero { margin-bottom: 28px; }
 
     .hero h1 {
       font-size: 42px;
@@ -139,15 +201,8 @@
       font-size: 14px;
     }
 
-    .primary {
-      background: #ff9900;
-      color: white;
-    }
-
-    .secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
+    .primary { background: #ff9900; color: white; }
+    .secondary { background: #e5e7eb; color: #111827; }
 
     .copy {
       background: white;
@@ -241,9 +296,7 @@
       margin-bottom: 8px;
     }
 
-    .metric strong {
-      font-size: 18px;
-    }
+    .metric strong { font-size: 18px; }
 
     .ticket-box {
       border: 1px solid #dbe3ee;
@@ -284,27 +337,15 @@
     }
 
     @media (max-width: 900px) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .hero h1 {
-        font-size: 34px;
-      }
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .hero h1 { font-size: 34px; }
     }
 
     @media (max-width: 600px) {
-      .topnote {
-        display: none;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .department-name {
-        font-size: 24px;
-      }
+      .topnote { display: none; }
+      .grid { grid-template-columns: 1fr; }
+      .department-name { font-size: 24px; }
+      .language-menu { width: 260px; }
     }
   </style>
 </head>
@@ -313,27 +354,46 @@
   <div class="topbar">
     <div class="brand">
       <div class="logo">🎫</div>
-      AI Ticket Classifier
+      <span id="appTitleTop">AI Ticket Classifier</span>
     </div>
-    <div class="topnote">Smart Routing · Department Detection · Ticket Draft</div>
+
+    <div class="top-right">
+      <div class="topnote" id="topNote">Smart Routing · Department Detection · Ticket Draft</div>
+
+      <div class="language-box">
+        <button class="language-button" onclick="toggleLanguageMenu()">
+          🌐 <span id="selectedLanguage">English</span>
+        </button>
+
+        <div class="language-menu" id="languageMenu">
+          <input
+            class="language-search"
+            id="languageSearch"
+            placeholder="Search language..."
+            oninput="filterLanguages()"
+          />
+          <div class="language-list" id="languageList"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="layout">
     <div class="hero">
-      <h1>AI Ticket Classifier</h1>
-      <p>Describe the issue. The tool recommends the right department and creates a clean ticket text.</p>
+      <h1 id="mainTitle">AI Ticket Classifier</h1>
+      <p id="mainSubtitle">Describe the issue. The tool recommends the right department and creates a clean ticket text.</p>
     </div>
 
     <div class="card">
-      <div class="card-title">Ticket Description</div>
-      <div class="hint">Example: “Der Klodeckel ist kaputt im Check In Bereich.”</div>
+      <div class="card-title" id="ticketDescriptionTitle">Ticket Description</div>
+      <div class="hint" id="ticketHint">Example: “Der Klodeckel ist kaputt im Check In Bereich.”</div>
 
       <textarea id="ticket" maxlength="2000" placeholder="Write the ticket issue here..."></textarea>
 
       <div class="actions">
         <div class="buttons">
-          <button class="primary" onclick="analyzeTicket()">Analyze Ticket</button>
-          <button class="secondary" onclick="resetForm()">Start Over</button>
+          <button class="primary" onclick="analyzeTicket()" id="analyzeBtn">Analyze Ticket</button>
+          <button class="secondary" onclick="resetForm()" id="resetBtn">Start Over</button>
         </div>
 
         <div class="counter"><span id="count">0</span> / 2000</div>
@@ -345,7 +405,7 @@
         <div class="department-main">
           <div class="department-icon" id="departmentIcon">🏢</div>
           <div>
-            <div class="small-label">Classified Department</div>
+            <div class="small-label" id="classifiedLabel">Classified Department</div>
             <div class="department-name" id="department">Not analyzed</div>
           </div>
         </div>
@@ -353,42 +413,40 @@
         <div class="confidence" id="confidence">Confidence: 0%</div>
       </div>
 
-      <div class="reason" id="reason">
-        Enter a ticket description and click Analyze Ticket.
-      </div>
+      <div class="reason" id="reason">Enter a ticket description and click Analyze Ticket.</div>
 
       <div class="grid">
         <div class="metric">
-          <span>Department</span>
+          <span id="departmentMetricLabel">Department</span>
           <strong id="metricDepartment">-</strong>
         </div>
 
         <div class="metric">
-          <span>Priority</span>
+          <span id="priorityMetricLabel">Priority</span>
           <strong id="priority">-</strong>
         </div>
 
         <div class="metric">
-          <span>Category</span>
+          <span id="categoryMetricLabel">Category</span>
           <strong id="category">-</strong>
         </div>
 
         <div class="metric">
-          <span>Severity</span>
+          <span id="severityMetricLabel">Severity</span>
           <strong id="severity">-</strong>
         </div>
       </div>
 
       <div class="ticket-box">
         <div class="ticket-head">
-          <span>Generated Ticket</span>
-          <button class="copy" onclick="copyTicket()">Copy Ticket</button>
+          <span id="generatedTicketLabel">Generated Ticket</span>
+          <button class="copy" onclick="copyTicket()" id="copyBtn">Copy Ticket</button>
         </div>
 
         <pre id="ticketOutput">Generated ticket text will appear here.</pre>
       </div>
 
-      <div class="notice">
+      <div class="notice" id="noticeText">
         This is currently a rule based version. Real KI integration can be added later with an API.
       </div>
     </div>
@@ -398,8 +456,147 @@
     const ticketInput = document.getElementById("ticket");
     const counter = document.getElementById("count");
 
+    const languages = [
+      "English","Deutsch","Türkçe","Kurdî","العربية","Español","Français","Italiano",
+      "Português","Nederlands","Polski","Čeština","Slovenčina","Magyar","Română",
+      "Български","Ελληνικά","Русский","Українська","中文","日本語","한국어","हिन्दी",
+      "বাংলা","اردو","فارسی","עברית","Svenska","Norsk","Dansk","Suomi","Eesti",
+      "Latviešu","Lietuvių","Hrvatski","Srpski","Slovenščina","Shqip","Македонски",
+      "Bahasa Indonesia","Bahasa Melayu","ภาษาไทย","Tiếng Việt","Filipino"
+    ];
+
+    const translations = {
+      English: {
+        topNote: "Smart Routing · Department Detection · Ticket Draft",
+        mainSubtitle: "Describe the issue. The tool recommends the right department and creates a clean ticket text.",
+        ticketDescription: "Ticket Description",
+        hint: "Example: “Der Klodeckel ist kaputt im Check In Bereich.”",
+        placeholder: "Write the ticket issue here...",
+        analyze: "Analyze Ticket",
+        reset: "Start Over",
+        classified: "Classified Department",
+        notAnalyzed: "Not analyzed",
+        reasonDefault: "Enter a ticket description and click Analyze Ticket.",
+        department: "Department",
+        priority: "Priority",
+        category: "Category",
+        severity: "Severity",
+        generated: "Generated Ticket",
+        copy: "Copy Ticket",
+        outputDefault: "Generated ticket text will appear here.",
+        notice: "This is currently a rule based version. Real KI integration can be added later with an API."
+      },
+      Deutsch: {
+        topNote: "Intelligentes Routing · Abteilungserkennung · Ticket Entwurf",
+        mainSubtitle: "Beschreibe das Problem. Das Tool empfiehlt die passende Abteilung und erstellt einen sauberen Tickettext.",
+        ticketDescription: "Ticket Beschreibung",
+        hint: "Beispiel: „Der Klodeckel ist kaputt im Check In Bereich.“",
+        placeholder: "Schreibe hier das Ticket Problem hinein...",
+        analyze: "Ticket analysieren",
+        reset: "Neu starten",
+        classified: "Erkannte Abteilung",
+        notAnalyzed: "Nicht analysiert",
+        reasonDefault: "Gib eine Ticket Beschreibung ein und klicke auf Ticket analysieren.",
+        department: "Abteilung",
+        priority: "Priorität",
+        category: "Kategorie",
+        severity: "Schweregrad",
+        generated: "Generiertes Ticket",
+        copy: "Ticket kopieren",
+        outputDefault: "Der generierte Tickettext erscheint hier.",
+        notice: "Dies ist aktuell eine regelbasierte Version. Eine echte KI Integration kann später per API ergänzt werden."
+      },
+      Türkçe: {
+        topNote: "Akıllı Yönlendirme · Departman Tespiti · Ticket Taslağı",
+        mainSubtitle: "Sorunu açıklayın. Araç doğru departmanı önerir ve temiz bir ticket metni oluşturur.",
+        ticketDescription: "Ticket Açıklaması",
+        hint: "Örnek: “Tuvalet kapağı Check In alanında kırık.”",
+        placeholder: "Ticket sorununu buraya yazın...",
+        analyze: "Ticket Analiz Et",
+        reset: "Baştan Başla",
+        classified: "Tespit Edilen Departman",
+        notAnalyzed: "Analiz edilmedi",
+        reasonDefault: "Bir ticket açıklaması girin ve Ticket Analiz Et butonuna tıklayın.",
+        department: "Departman",
+        priority: "Öncelik",
+        category: "Kategori",
+        severity: "Şiddet",
+        generated: "Oluşturulan Ticket",
+        copy: "Ticket Kopyala",
+        outputDefault: "Oluşturulan ticket metni burada görünecek.",
+        notice: "Bu şu anda kural tabanlı bir versiyondur. Gerçek KI entegrasyonu daha sonra API ile eklenebilir."
+      }
+    };
+
     ticketInput.addEventListener("input", function () {
       counter.innerText = ticketInput.value.length;
+    });
+
+    function toggleLanguageMenu() {
+      document.getElementById("languageMenu").classList.toggle("open");
+      renderLanguages(languages);
+      document.getElementById("languageSearch").focus();
+    }
+
+    function renderLanguages(list) {
+      const container = document.getElementById("languageList");
+      container.innerHTML = "";
+
+      list.forEach(function(lang) {
+        const item = document.createElement("div");
+        item.className = "language-item";
+        item.innerText = lang;
+        item.onclick = function() {
+          selectLanguage(lang);
+        };
+        container.appendChild(item);
+      });
+    }
+
+    function filterLanguages() {
+      const query = document.getElementById("languageSearch").value.toLowerCase();
+      const filtered = languages.filter(function(lang) {
+        return lang.toLowerCase().includes(query);
+      });
+      renderLanguages(filtered);
+    }
+
+    function selectLanguage(lang) {
+      document.getElementById("selectedLanguage").innerText = lang;
+      document.getElementById("languageMenu").classList.remove("open");
+
+      const t = translations[lang] || translations.English;
+
+      document.getElementById("topNote").innerText = t.topNote;
+      document.getElementById("mainSubtitle").innerText = t.mainSubtitle;
+      document.getElementById("ticketDescriptionTitle").innerText = t.ticketDescription;
+      document.getElementById("ticketHint").innerText = t.hint;
+      document.getElementById("ticket").placeholder = t.placeholder;
+      document.getElementById("analyzeBtn").innerText = t.analyze;
+      document.getElementById("resetBtn").innerText = t.reset;
+      document.getElementById("classifiedLabel").innerText = t.classified;
+      document.getElementById("departmentMetricLabel").innerText = t.department;
+      document.getElementById("priorityMetricLabel").innerText = t.priority;
+      document.getElementById("categoryMetricLabel").innerText = t.category;
+      document.getElementById("severityMetricLabel").innerText = t.severity;
+      document.getElementById("generatedTicketLabel").innerText = t.generated;
+      document.getElementById("copyBtn").innerText = t.copy;
+      document.getElementById("noticeText").innerText = t.notice;
+
+      if (document.getElementById("department").innerText === "Not analyzed" ||
+          document.getElementById("department").innerText === "Nicht analysiert" ||
+          document.getElementById("department").innerText === "Analiz edilmedi") {
+        document.getElementById("department").innerText = t.notAnalyzed;
+        document.getElementById("reason").innerText = t.reasonDefault;
+        document.getElementById("ticketOutput").innerText = t.outputDefault;
+      }
+    }
+
+    document.addEventListener("click", function(e) {
+      const box = document.querySelector(".language-box");
+      if (!box.contains(e.target)) {
+        document.getElementById("languageMenu").classList.remove("open");
+      }
     });
 
     function analyzeTicket() {
@@ -419,11 +616,7 @@
       let icon = "🏢";
       let reason = "No specific routing keyword was detected. The ticket should be reviewed by general support.";
 
-      if (containsAny(text, [
-        "klo", "klodeckel", "toilette", "toilet", "wc", "wasser", "waschbecken",
-        "licht", "lampe", "tür", "door", "kaputt", "defekt", "broken",
-        "reparatur", "gebäude", "facility", "heizung", "klima", "boden"
-      ])) {
+      if (containsAny(text, ["klo","klodeckel","toilette","toilet","wc","wasser","waschbecken","licht","lampe","tür","door","kaputt","defekt","broken","reparatur","gebäude","facility","heizung","klima","boden"])) {
         department = "RME / Facility";
         priority = "Medium";
         category = "Building Maintenance";
@@ -433,11 +626,7 @@
         reason = "The issue is related to building maintenance, sanitary facilities or physical infrastructure.";
       }
 
-      if (containsAny(text, [
-        "netzwerk", "internet", "wifi", "wlan", "laptop", "computer", "pc",
-        "drucker", "printer", "scanner", "login", "account", "passwort",
-        "password", "zugriff", "access", "vpn", "software"
-      ])) {
+      if (containsAny(text, ["netzwerk","internet","wifi","wlan","laptop","computer","pc","drucker","printer","scanner","login","account","passwort","password","zugriff","access","vpn","software"])) {
         department = "IT Support";
         priority = "Medium";
         category = "IT Issue";
@@ -447,10 +636,7 @@
         reason = "The issue is related to IT hardware, software, network, login or access.";
       }
 
-      if (containsAny(text, [
-        "unfall", "verletzung", "injury", "safety", "unsafe", "hazard",
-        "gefahr", "near miss", "first aid", "sturz", "blutung", "notfall"
-      ])) {
+      if (containsAny(text, ["unfall","verletzung","injury","safety","unsafe","hazard","gefahr","near miss","first aid","sturz","blutung","notfall"])) {
         department = "Safety";
         priority = "High";
         category = "Safety Incident";
@@ -460,11 +646,7 @@
         reason = "The issue indicates a possible safety risk, injury, unsafe condition or emergency.";
       }
 
-      if (containsAny(text, [
-        "fahrer", "driver", "trailer", "vrid", "yard", "dock", "gate",
-        "check in", "check-in", "late departure", "arrival", "carrier",
-        "seal", "plombe", "loading", "departure"
-      ])) {
+      if (containsAny(text, ["fahrer","driver","trailer","vrid","yard","dock","gate","check in","check-in","late departure","arrival","carrier","seal","plombe","loading","departure"])) {
         department = "TOM / Yard Team";
         priority = "Medium";
         category = "Yard Operation";
@@ -474,10 +656,7 @@
         reason = "The ticket is related to drivers, trailers, VRIDs, yard, dock, gate or TOM operations.";
       }
 
-      if (containsAny(text, [
-        "gehalt", "lohn", "pay", "hr", "pxt", "krankmeldung", "absence",
-        "urlaub", "holiday", "vertrag", "contract", "schicht", "arbeitszeit"
-      ])) {
+      if (containsAny(text, ["gehalt","lohn","pay","hr","pxt","krankmeldung","absence","urlaub","holiday","vertrag","contract","schicht","arbeitszeit"])) {
         department = "PXT / HR";
         priority = "Medium";
         category = "People / HR";
@@ -487,10 +666,7 @@
         reason = "The issue is related to employee matters, payroll, absence, contract or working time.";
       }
 
-      if (containsAny(text, [
-        "security", "badge", "ausweis", "zutritt", "access card",
-        "gatehouse", "visitor", "besucher", "diebstahl", "theft"
-      ])) {
+      if (containsAny(text, ["security","badge","ausweis","zutritt","access card","gatehouse","visitor","besucher","diebstahl","theft"])) {
         department = "Security";
         priority = "Medium";
         category = "Access / Security";
@@ -500,10 +676,7 @@
         reason = "The issue is related to site access, badge, visitors, gatehouse or security matters.";
       }
 
-      if (containsAny(text, [
-        "training", "schulung", "knet", "learning", "retrain",
-        "onboarding", "trainer", "instructor"
-      ])) {
+      if (containsAny(text, ["training","schulung","knet","learning","retrain","onboarding","trainer","instructor"])) {
         department = "Learning";
         priority = "Medium";
         category = "Training / Learning";
@@ -568,24 +741,27 @@ Please review this issue and take the required next steps.`;
     }
 
     function resetForm() {
+      const selected = document.getElementById("selectedLanguage").innerText;
+      const t = translations[selected] || translations.English;
+
       ticketInput.value = "";
       counter.innerText = "0";
 
       document.getElementById("departmentIcon").innerText = "🏢";
-      document.getElementById("department").innerText = "Not analyzed";
+      document.getElementById("department").innerText = t.notAnalyzed;
       document.getElementById("metricDepartment").innerText = "-";
       document.getElementById("priority").innerText = "-";
       document.getElementById("category").innerText = "-";
       document.getElementById("severity").innerText = "-";
       document.getElementById("confidence").innerText = "Confidence: 0%";
-      document.getElementById("reason").innerText = "Enter a ticket description and click Analyze Ticket.";
-      document.getElementById("ticketOutput").innerText = "Generated ticket text will appear here.";
+      document.getElementById("reason").innerText = t.reasonDefault;
+      document.getElementById("ticketOutput").innerText = t.outputDefault;
     }
 
     function copyTicket() {
       const output = document.getElementById("ticketOutput").innerText;
 
-      if (!output || output === "Generated ticket text will appear here.") {
+      if (!output || output.includes("Generated ticket text") || output.includes("generierte Tickettext")) {
         alert("No ticket text available yet.");
         return;
       }
@@ -594,6 +770,8 @@ Please review this issue and take the required next steps.`;
         alert("Ticket copied.");
       });
     }
+
+    renderLanguages(languages);
   </script>
 </body>
 </html>
