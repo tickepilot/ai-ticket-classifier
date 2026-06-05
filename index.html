@@ -1,81 +1,599 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>AI Ticket Classifier</title>
-<style>
-body{
-font-family:Arial;
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Ticket Classifier</title>
 
-textarea{
-width:100%;
-height:250px;
-padding:10px;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-button{
-padding:12px 25px;
-margin-top:10px;
-cursor:pointer;
-}
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #182235;
+    }
 
-#result{
-margin-top:20px;
-padding:20px;
-border:1px solid #ccc;
-background:#f5f5f5;
-}
-</style>
+    .topbar {
+      height: 72px;
+      background: #111827;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 34px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #ff9900, #f97316);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .topnote {
+      font-size: 14px;
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+
+    .layout {
+      max-width: 1180px;
+      margin: 42px auto;
+      padding: 0 22px;
+    }
+
+    .hero {
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin: 0 0 8px;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #64748b;
+      font-size: 17px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .hint {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 230px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      font-size: 16px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus {
+      background: white;
+      border-color: #ff9900;
+      box-shadow: 0 0 0 4px rgba(255,153,0,0.16);
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .primary {
+      background: #ff9900;
+      color: white;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .copy {
+      background: white;
+      color: #2563eb;
+      border: 1px solid #93c5fd;
+      padding: 10px 16px;
+    }
+
+    .counter {
+      color: #64748b;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .department-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .department-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: #111827;
+      color: #ff9900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .small-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .department-name {
+      font-size: 30px;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .confidence {
+      background: #ecfdf5;
+      color: #047857;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+
+    .reason {
+      color: #475569;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metric {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .metric span {
+      display: block;
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      font-size: 18px;
+    }
+
+    .ticket-box {
+      border: 1px solid #dbe3ee;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .ticket-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 900;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px;
+      white-space: pre-wrap;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #334155;
+      background: #fbfdff;
+    }
+
+    .notice {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .topnote {
+        display: none;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .department-name {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">🎫</div>
+      AI Ticket Classifier
+    </div>
+    <div class="topnote">Smart Routing · Department Detection · Ticket Draft</div>
+  </div>
 
-<h1>AI Ticket Classifier</h1>
+  <div class="layout">
+    <div class="hero">
+      <h1>AI Ticket Classifier</h1>
+      <p>Describe the issue. The tool recommends the right department and creates a clean ticket text.</p>
+    </div>
 
-<h3>Ticket Description</h3>
+    <div class="card">
+      <div class="card-title">Ticket Description</div>
+      <div class="hint">Example: “Der Klodeckel ist kaputt im Check In Bereich.”</div>
 
-<textarea id="ticket"></textarea>
+      <textarea id="ticket" maxlength="2000" placeholder="Write the ticket issue here..."></textarea>
 
-<br>
+      <div class="actions">
+        <div class="buttons">
+          <button class="primary" onclick="analyzeTicket()">Analyze Ticket</button>
+          <button class="secondary" onclick="resetForm()">Start Over</button>
+        </div>
 
-<button onclick="analyzeTicket()">
-Analyze Ticket
-</button>
+        <div class="counter"><span id="count">0</span> / 2000</div>
+      </div>
+    </div>
 
-<div id="result">
+    <div class="card">
+      <div class="result-header">
+        <div class="department-main">
+          <div class="department-icon" id="departmentIcon">🏢</div>
+          <div>
+            <div class="small-label">Classified Department</div>
+            <div class="department-name" id="department">Not analyzed</div>
+          </div>
+        </div>
 
-Abteilung erscheint hier
+        <div class="confidence" id="confidence">Confidence: 0%</div>
+      </div>
 
-</div>
+      <div class="reason" id="reason">
+        Enter a ticket description and click Analyze Ticket.
+      </div>
 
-<script>
-function analyzeTicket(){
+      <div class="grid">
+        <div class="metric">
+          <span>Department</span>
+          <strong id="metricDepartment">-</strong>
+        </div>
 
-const text =
-document.getElementById("ticket")
-.value
-.toLowerCase();
+        <div class="metric">
+          <span>Priority</span>
+          <strong id="priority">-</strong>
+        </div>
 
-let department="General";
+        <div class="metric">
+          <span>Category</span>
+          <strong id="category">-</strong>
+        </div>
 
-if(text.includes("netzwerk"))
-department="IT Network";
+        <div class="metric">
+          <span>Severity</span>
+          <strong id="severity">-</strong>
+        </div>
+      </div>
 
-else if(text.includes("drucker"))
-department="IT Support";
+      <div class="ticket-box">
+        <div class="ticket-head">
+          <span>Generated Ticket</span>
+          <button class="copy" onclick="copyTicket()">Copy Ticket</button>
+        </div>
 
-else if(text.includes("gehalt"))
-department="HR";
+        <pre id="ticketOutput">Generated ticket text will appear here.</pre>
+      </div>
 
-else if(text.includes("sicherheit"))
-department="Safety Team";
+      <div class="notice">
+        This is currently a rule based version. Real KI integration can be added later with an API.
+      </div>
+    </div>
+  </div>
 
-document.getElementById("result").innerHTML=
-"<h2>"+department+"</h2>";
-}
-</script>
+  <script>
+    const ticketInput = document.getElementById("ticket");
+    const counter = document.getElementById("count");
 
+    ticketInput.addEventListener("input", function () {
+      counter.innerText = ticketInput.value.length;
+    });
+
+    function analyzeTicket() {
+      const rawText = ticketInput.value.trim();
+      const text = rawText.toLowerCase();
+
+      if (!rawText) {
+        alert("Please enter a ticket description first.");
+        return;
+      }
+
+      let department = "General Support";
+      let priority = "Low";
+      let category = "General Request";
+      let severity = "Low";
+      let confidence = "65%";
+      let icon = "🏢";
+      let reason = "No specific routing keyword was detected. The ticket should be reviewed by general support.";
+
+      if (containsAny(text, [
+        "klo", "klodeckel", "toilette", "toilet", "wc", "wasser", "waschbecken",
+        "licht", "lampe", "tür", "door", "kaputt", "defekt", "broken",
+        "reparatur", "gebäude", "facility", "heizung", "klima", "boden"
+      ])) {
+        department = "RME / Facility";
+        priority = "Medium";
+        category = "Building Maintenance";
+        severity = "Medium";
+        confidence = "92%";
+        icon = "🏭";
+        reason = "The issue is related to building maintenance, sanitary facilities or physical infrastructure.";
+      }
+
+      if (containsAny(text, [
+        "netzwerk", "internet", "wifi", "wlan", "laptop", "computer", "pc",
+        "drucker", "printer", "scanner", "login", "account", "passwort",
+        "password", "zugriff", "access", "vpn", "software"
+      ])) {
+        department = "IT Support";
+        priority = "Medium";
+        category = "IT Issue";
+        severity = "Medium";
+        confidence = "90%";
+        icon = "💻";
+        reason = "The issue is related to IT hardware, software, network, login or access.";
+      }
+
+      if (containsAny(text, [
+        "unfall", "verletzung", "injury", "safety", "unsafe", "hazard",
+        "gefahr", "near miss", "first aid", "sturz", "blutung", "notfall"
+      ])) {
+        department = "Safety";
+        priority = "High";
+        category = "Safety Incident";
+        severity = "High";
+        confidence = "95%";
+        icon = "⚠️";
+        reason = "The issue indicates a possible safety risk, injury, unsafe condition or emergency.";
+      }
+
+      if (containsAny(text, [
+        "fahrer", "driver", "trailer", "vrid", "yard", "dock", "gate",
+        "check in", "check-in", "late departure", "arrival", "carrier",
+        "seal", "plombe", "loading", "departure"
+      ])) {
+        department = "TOM / Yard Team";
+        priority = "Medium";
+        category = "Yard Operation";
+        severity = "Medium";
+        confidence = "91%";
+        icon = "🚛";
+        reason = "The ticket is related to drivers, trailers, VRIDs, yard, dock, gate or TOM operations.";
+      }
+
+      if (containsAny(text, [
+        "gehalt", "lohn", "pay", "hr", "pxt", "krankmeldung", "absence",
+        "urlaub", "holiday", "vertrag", "contract", "schicht", "arbeitszeit"
+      ])) {
+        department = "PXT / HR";
+        priority = "Medium";
+        category = "People / HR";
+        severity = "Medium";
+        confidence = "88%";
+        icon = "👥";
+        reason = "The issue is related to employee matters, payroll, absence, contract or working time.";
+      }
+
+      if (containsAny(text, [
+        "security", "badge", "ausweis", "zutritt", "access card",
+        "gatehouse", "visitor", "besucher", "diebstahl", "theft"
+      ])) {
+        department = "Security";
+        priority = "Medium";
+        category = "Access / Security";
+        severity = "Medium";
+        confidence = "89%";
+        icon = "🛡️";
+        reason = "The issue is related to site access, badge, visitors, gatehouse or security matters.";
+      }
+
+      if (containsAny(text, [
+        "training", "schulung", "knet", "learning", "retrain",
+        "onboarding", "trainer", "instructor"
+      ])) {
+        department = "Learning";
+        priority = "Medium";
+        category = "Training / Learning";
+        severity = "Low";
+        confidence = "87%";
+        icon = "📚";
+        reason = "The issue is related to training, onboarding, KNET, retraining or learning processes.";
+      }
+
+      updateResult(department, priority, category, severity, confidence, icon, reason, rawText);
+    }
+
+    function updateResult(department, priority, category, severity, confidence, icon, reason, rawText) {
+      document.getElementById("departmentIcon").innerText = icon;
+      document.getElementById("department").innerText = department;
+      document.getElementById("metricDepartment").innerText = department;
+      document.getElementById("priority").innerText = priority;
+      document.getElementById("category").innerText = category;
+      document.getElementById("severity").innerText = severity;
+      document.getElementById("confidence").innerText = "Confidence: " + confidence;
+      document.getElementById("reason").innerText = reason;
+
+      const subject = createSubject(department, rawText);
+
+      const ticketText =
+`Subject: ${subject}
+
+Description:
+${rawText}
+
+Requested Department:
+${department}
+
+Category:
+${category}
+
+Priority:
+${priority}
+
+Severity:
+${severity}
+
+Reason for routing:
+${reason}
+
+Action requested:
+Please review this issue and take the required next steps.`;
+
+      document.getElementById("ticketOutput").innerText = ticketText;
+    }
+
+    function containsAny(text, words) {
+      return words.some(function(word) {
+        return text.includes(word);
+      });
+    }
+
+    function createSubject(department, text) {
+      const cleanText = text.replace(/\s+/g, " ").trim();
+      const shortText = cleanText.length > 60 ? cleanText.substring(0, 60) + "..." : cleanText;
+      return department + " | " + shortText;
+    }
+
+    function resetForm() {
+      ticketInput.value = "";
+      counter.innerText = "0";
+
+      document.getElementById("departmentIcon").innerText = "🏢";
+      document.getElementById("department").innerText = "Not analyzed";
+      document.getElementById("metricDepartment").innerText = "-";
+      document.getElementById("priority").innerText = "-";
+      document.getElementById("category").innerText = "-";
+      document.getElementById("severity").innerText = "-";
+      document.getElementById("confidence").innerText = "Confidence: 0%";
+      document.getElementById("reason").innerText = "Enter a ticket description and click Analyze Ticket.";
+      document.getElementById("ticketOutput").innerText = "Generated ticket text will appear here.";
+    }
+
+    function copyTicket() {
+      const output = document.getElementById("ticketOutput").innerText;
+
+      if (!output || output === "Generated ticket text will appear here.") {
+        alert("No ticket text available yet.");
+        return;
+      }
+
+      navigator.clipboard.writeText(output).then(function () {
+        alert("Ticket copied.");
+      });
+    }
+  </script>
 </body>
 </html>
