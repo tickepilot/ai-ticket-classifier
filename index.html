@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Ticket Classifier</title>
+<title>TicketFlow AI</title>
 
 <style>
 *{box-sizing:border-box}
@@ -12,16 +12,16 @@ body{
 margin:0;
 font-family:Arial,sans-serif;
 background:#07111f;
-color:#fff;
+color:white;
 }
 
 .hero{
 min-height:100vh;
-padding:36px 60px;
+padding:28px 38px;
 background:
-linear-gradient(120deg,rgba(5,12,25,.98),rgba(30,64,175,.55),rgba(255,255,255,.18)),
-radial-gradient(circle at 75% 35%,rgba(96,165,250,.55),transparent 35%),
-linear-gradient(180deg,#2f66c9 0%,#e9f0ff 100%);
+linear-gradient(120deg,rgba(6,18,38,.98),rgba(36,86,190,.72),rgba(230,240,255,.45)),
+radial-gradient(circle at 76% 30%,rgba(100,170,255,.45),transparent 35%),
+linear-gradient(180deg,#2b61c8 0%,#edf4ff 100%);
 position:relative;
 overflow:hidden;
 }
@@ -31,11 +31,11 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 position:relative;
-z-index:5;
+z-index:10;
 }
 
 .brand{
-font-size:26px;
+font-size:25px;
 font-weight:900;
 display:flex;
 align-items:center;
@@ -43,8 +43,8 @@ gap:14px;
 }
 
 .logo{
-width:46px;
-height:46px;
+width:45px;
+height:45px;
 border-radius:13px;
 background:#ff9900;
 display:grid;
@@ -52,129 +52,117 @@ place-items:center;
 color:#111827;
 }
 
-.navlinks{
-display:flex;
-gap:34px;
-font-weight:800;
-color:rgba(255,255,255,.8);
-}
+.language-box{position:relative}
 
-.lang{
-background:rgba(255,255,255,.22);
-border:1px solid rgba(255,255,255,.45);
+.language-button{
+background:rgba(255,255,255,.2);
+border:1px solid rgba(255,255,255,.42);
 color:white;
-padding:13px 18px;
+padding:12px 18px;
 border-radius:12px;
 font-weight:900;
+cursor:pointer;
+backdrop-filter:blur(12px);
 }
 
-.heroText{
+.language-menu{
+display:none;
+position:absolute;
+right:0;
+top:52px;
+width:310px;
+background:white;
+color:#111827;
+border-radius:16px;
+overflow:hidden;
+box-shadow:0 24px 70px rgba(0,0,0,.34);
+z-index:99;
+}
+
+.language-menu.open{display:block}
+
+.language-search{
+width:100%;
+padding:15px;
+border:0;
+border-bottom:1px solid #e5e7eb;
+outline:none;
+font-size:14px;
+}
+
+.language-list{
+max-height:310px;
+overflow-y:auto;
+}
+
+.language-item{
+padding:13px 16px;
+font-weight:800;
+cursor:pointer;
+border-bottom:1px solid #f1f5f9;
+}
+
+.language-item:hover{
+background:#f8fafc;
+color:#ff9900;
+}
+
+.hero-grid{
 position:relative;
-z-index:4;
-margin-top:130px;
-max-width:950px;
+z-index:5;
+display:grid;
+grid-template-columns:1fr 1.55fr 1fr;
+gap:34px;
+align-items:center;
+min-height:calc(100vh - 95px);
 }
 
-.heroText h1{
-font-size:112px;
-line-height:.9;
+.hero-text h1{
+font-size:88px;
+line-height:.88;
 font-weight:300;
-letter-spacing:-6px;
+letter-spacing:-5px;
 margin:0;
 }
 
-.heroText h1 span{
+.hero-text h1 span{
 display:block;
-margin-left:150px;
+margin-left:80px;
 }
 
-.heroText p{
-margin-top:70px;
-font-size:22px;
+.hero-text p{
+margin-top:42px;
+font-size:19px;
 line-height:1.35;
-max-width:430px;
-color:rgba(255,255,255,.82);
-border-left:2px solid rgba(255,255,255,.55);
-padding-left:24px;
-}
-
-.ticketVisual{
-position:absolute;
-right:7%;
-top:18%;
-width:480px;
-height:570px;
-opacity:.82;
-transform:rotate(-4deg);
-}
-
-.floatingTicket{
-position:absolute;
-width:320px;
-height:122px;
-border-radius:24px;
-background:rgba(255,255,255,.22);
-border:1px solid rgba(255,255,255,.5);
-backdrop-filter:blur(16px);
-box-shadow:0 30px 80px rgba(0,0,0,.25);
-}
-
-.floatingTicket:before{
-content:"";
-position:absolute;
-left:24px;
-top:28px;
-width:56px;
-height:56px;
-border-radius:16px;
-background:#ff9900;
-}
-
-.floatingTicket:after{
-content:"";
-position:absolute;
-left:104px;
-top:34px;
-width:170px;
-height:12px;
-border-radius:10px;
-background:rgba(255,255,255,.85);
-box-shadow:0 28px 0 rgba(255,255,255,.55);
-}
-
-.t1{top:0;right:20px}
-.t2{top:155px;right:125px;transform:rotate(7deg)}
-.t3{top:310px;right:0;transform:rotate(-8deg)}
-.t4{top:465px;right:100px;transform:rotate(4deg)}
-
-.app{
-background:#f4f7fb;
-color:#111827;
-padding:75px 24px;
+max-width:360px;
+color:rgba(255,255,255,.86);
+border-left:2px solid rgba(255,255,255,.5);
+padding-left:20px;
 }
 
 .panel{
-max-width:1180px;
-margin:auto;
-background:white;
-border-radius:30px;
-padding:34px;
-box-shadow:0 25px 70px rgba(15,23,42,.14);
+background:rgba(255,255,255,.96);
+color:#111827;
+border-radius:28px;
+padding:30px;
+box-shadow:0 30px 75px rgba(15,23,42,.25);
+border:1px solid rgba(255,255,255,.55);
+backdrop-filter:blur(18px);
 }
 
 .panel h2{
-font-size:36px;
+font-size:34px;
 margin:0 0 8px;
 }
 
 .panel p{
 color:#64748b;
-margin:0 0 26px;
+margin:0 0 22px;
 }
 
 textarea{
 width:100%;
-min-height:230px;
+min-height:190px;
 border-radius:18px;
 border:1px solid #cbd5e1;
 background:#f8fafc;
@@ -191,7 +179,7 @@ background:white;
 }
 
 .actions{
-margin-top:18px;
+margin-top:16px;
 display:flex;
 justify-content:space-between;
 align-items:center;
@@ -200,7 +188,7 @@ flex-wrap:wrap;
 }
 
 button{
-border:none;
+border:0;
 border-radius:12px;
 padding:14px 22px;
 font-weight:900;
@@ -211,37 +199,38 @@ cursor:pointer;
 .secondary{background:#e5e7eb;color:#111827}
 
 .result{
-margin-top:32px;
+margin-top:24px;
 border:1px solid #e5e7eb;
-border-radius:24px;
+border-radius:22px;
 overflow:hidden;
+background:white;
 }
 
 .resultTop{
-padding:28px;
+padding:24px;
 background:linear-gradient(135deg,#eef6ff,#fff);
 display:flex;
 justify-content:space-between;
 align-items:center;
-gap:20px;
+gap:18px;
 flex-wrap:wrap;
 }
 
 .dept{
 display:flex;
 align-items:center;
-gap:18px;
+gap:16px;
 }
 
 .icon{
-width:66px;
-height:66px;
-border-radius:18px;
+width:60px;
+height:60px;
+border-radius:17px;
 background:#111827;
 color:#ff9900;
 display:grid;
 place-items:center;
-font-size:30px;
+font-size:28px;
 }
 
 .label{
@@ -253,71 +242,61 @@ text-transform:uppercase;
 }
 
 .name{
-font-size:32px;
+font-size:28px;
 font-weight:900;
 }
 
 .confidence{
 background:#dcfce7;
 color:#047857;
-padding:12px 18px;
+padding:11px 18px;
 border-radius:999px;
 font-weight:900;
 }
 
 .reason{
-padding:0 28px 24px;
+padding:0 24px 20px;
 color:#475569;
 line-height:1.6;
 }
 
 .grid{
-padding:0 28px 28px;
+padding:0 24px 24px;
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:16px;
+gap:14px;
 }
 
 .metric{
 background:#f8fafc;
 border:1px solid #e2e8f0;
-border-radius:18px;
-padding:18px;
+border-radius:16px;
+padding:16px;
 }
 
 .metric span{
 display:block;
 color:#64748b;
-font-size:12px;
+font-size:11px;
 font-weight:900;
 margin-bottom:8px;
 text-transform:uppercase;
 }
 
 .ticketBox{
-margin:0 28px 28px;
+margin:0 24px 24px;
 border:1px solid #dbe3ee;
-border-radius:18px;
+border-radius:16px;
 overflow:hidden;
 }
 
 .ticketHead{
-padding:17px 20px;
+padding:15px 18px;
 border-bottom:1px solid #e5e7eb;
 display:flex;
 justify-content:space-between;
 align-items:center;
 font-weight:900;
-}
-
-pre{
-margin:0;
-padding:20px;
-white-space:pre-wrap;
-font-family:Arial,sans-serif;
-line-height:1.55;
-background:#fbfdff;
-color:#334155;
 }
 
 .copy{
@@ -327,19 +306,73 @@ border:1px solid #93c5fd;
 padding:10px 16px;
 }
 
-@media(max-width:900px){
-.heroText h1{font-size:66px}
-.heroText h1 span{margin-left:60px}
-.navlinks{display:none}
-.ticketVisual{opacity:.25;right:-140px}
-.grid{grid-template-columns:repeat(2,1fr)}
+pre{
+margin:0;
+padding:18px;
+white-space:pre-wrap;
+font-family:Arial,sans-serif;
+line-height:1.55;
+background:#fbfdff;
+color:#334155;
 }
 
-@media(max-width:600px){
-.hero{padding:24px}
-.heroText h1{font-size:48px}
-heroText h1 span{margin-left:0}
+.visual{
+position:relative;
+height:570px;
+}
+
+.floatingTicket{
+position:absolute;
+width:310px;
+height:118px;
+border-radius:24px;
+background:rgba(255,255,255,.22);
+border:1px solid rgba(255,255,255,.5);
+backdrop-filter:blur(16px);
+box-shadow:0 30px 80px rgba(0,0,0,.22);
+}
+
+.floatingTicket:before{
+content:"";
+position:absolute;
+left:24px;
+top:28px;
+width:54px;
+height:54px;
+border-radius:16px;
+background:#ff9900;
+}
+
+.floatingTicket:after{
+content:"";
+position:absolute;
+left:102px;
+top:34px;
+width:165px;
+height:12px;
+border-radius:10px;
+background:rgba(255,255,255,.85);
+box-shadow:0 28px 0 rgba(255,255,255,.55);
+}
+
+.t1{top:40px;right:10px;transform:rotate(-4deg)}
+.t2{top:190px;right:90px;transform:rotate(4deg)}
+.t3{top:335px;right:0;transform:rotate(-9deg)}
+.t4{top:475px;right:80px;transform:rotate(1deg)}
+
+@media(max-width:1200px){
+.hero-grid{grid-template-columns:1fr}
+.visual{display:none}
+.hero-text h1{font-size:62px}
+.hero-text h1 span{margin-left:0}
+.panel{max-width:900px}
+}
+
+@media(max-width:700px){
+.hero{padding:22px}
 .grid{grid-template-columns:1fr}
+.panel{padding:22px}
+.hero-text h1{font-size:46px}
 }
 </style>
 </head>
@@ -347,42 +380,36 @@ heroText h1 span{margin-left:0}
 <body>
 
 <section class="hero">
-<div class="ticketVisual">
-<div class="floatingTicket t1"></div>
-<div class="floatingTicket t2"></div>
-<div class="floatingTicket t3"></div>
-<div class="floatingTicket t4"></div>
-</div>
 
 <nav class="nav">
-<div class="brand"><div class="logo">🎫</div>TicketFlow AI</div>
-<div class="navlinks">
-<div>Routing</div>
-<div>Departments</div>
-<div>Priority</div>
-<div>Severity</div>
-<div>Ticket Draft</div>
+<div class="brand"><div class="logo">🎫</div><span id="brandText">TicketFlow AI</span></div>
+
+<div class="language-box">
+<button class="language-button" onclick="toggleLanguageMenu()">🌐 <span id="selectedLanguage">English</span></button>
+<div class="language-menu" id="languageMenu">
+<input class="language-search" id="languageSearch" placeholder="Search language..." oninput="filterLanguages()">
+<div class="language-list" id="languageList"></div>
 </div>
-<button class="lang">🌐 Language</button>
+</div>
 </nav>
 
-<div class="heroText">
-<h1>Routing <span>Tickets</span></h1>
-<p>Intelligent ticket classification for support, facility, safety, yard operations, HR and IT workflows.</p>
-</div>
-</section>
+<div class="hero-grid">
 
-<section class="app">
+<div class="hero-text">
+<h1 id="heroTitle">Routing <span>Tickets</span></h1>
+<p id="heroSubtitle">Intelligent ticket classification for support, facility, safety, yard operations, HR and IT workflows.</p>
+</div>
+
 <div class="panel">
-<h2>AI Ticket Classifier</h2>
-<p>Describe the issue. The tool recommends the right department and creates a clean ticket text.</p>
+<h2 id="panelTitle">AI Ticket Classifier</h2>
+<p id="panelSubtitle">Describe the issue. The tool recommends the right department and creates a clean ticket text.</p>
 
 <textarea id="ticket" maxlength="2000" placeholder="Write the ticket issue here..."></textarea>
 
 <div class="actions">
 <div>
-<button class="primary" onclick="analyzeTicket()">Analyze Ticket</button>
-<button class="secondary" onclick="resetForm()">Start Over</button>
+<button class="primary" onclick="analyzeTicket()" id="analyzeBtn">Analyze Ticket</button>
+<button class="secondary" onclick="resetForm()" id="resetBtn">Start Over</button>
 </div>
 <div><span id="count">0</span> / 2000</div>
 </div>
@@ -392,7 +419,7 @@ heroText h1 span{margin-left:0}
 <div class="dept">
 <div class="icon" id="departmentIcon">🏢</div>
 <div>
-<div class="label">Classified Department</div>
+<div class="label" id="classifiedLabel">Classified Department</div>
 <div class="name" id="department">Not analyzed</div>
 </div>
 </div>
@@ -402,20 +429,29 @@ heroText h1 span{margin-left:0}
 <div class="reason" id="reason">Enter a ticket description and click Analyze Ticket.</div>
 
 <div class="grid">
-<div class="metric"><span>Department</span><strong id="metricDepartment">-</strong></div>
-<div class="metric"><span>Priority</span><strong id="priority">-</strong></div>
-<div class="metric"><span>Category</span><strong id="category">-</strong></div>
-<div class="metric"><span>Severity</span><strong id="severity">-</strong></div>
+<div class="metric"><span id="departmentLabel">Department</span><strong id="metricDepartment">-</strong></div>
+<div class="metric"><span id="priorityLabel">Priority</span><strong id="priority">-</strong></div>
+<div class="metric"><span id="categoryLabel">Category</span><strong id="category">-</strong></div>
+<div class="metric"><span id="severityLabel">Severity</span><strong id="severity">-</strong></div>
 </div>
 
 <div class="ticketBox">
 <div class="ticketHead">
-<span>Generated Ticket</span>
-<button class="copy" onclick="copyTicket()">Copy Ticket</button>
+<span id="generatedLabel">Generated Ticket</span>
+<button class="copy" onclick="copyTicket()" id="copyBtn">Copy Ticket</button>
 </div>
 <pre id="ticketOutput">Generated ticket text will appear here.</pre>
 </div>
 </div>
+</div>
+
+<div class="visual">
+<div class="floatingTicket t1"></div>
+<div class="floatingTicket t2"></div>
+<div class="floatingTicket t3"></div>
+<div class="floatingTicket t4"></div>
+</div>
+
 </div>
 </section>
 
@@ -423,33 +459,121 @@ heroText h1 span{margin-left:0}
 const ticketInput=document.getElementById("ticket");
 const counter=document.getElementById("count");
 
+const languages=[
+"English","Deutsch","Türkçe","Kurdî","العربية","Français","Español","Italiano","Português","Polski","Nederlands","Русский"
+];
+
+const translations={
+English:{
+selected:"English",hero:"Routing <span>Tickets</span>",sub:"Intelligent ticket classification for support, facility, safety, yard operations, HR and IT workflows.",
+title:"AI Ticket Classifier",panel:"Describe the issue. The tool recommends the right department and creates a clean ticket text.",
+placeholder:"Write the ticket issue here...",analyze:"Analyze Ticket",reset:"Start Over",classified:"Classified Department",
+not:"Not analyzed",reason:"Enter a ticket description and click Analyze Ticket.",department:"Department",priority:"Priority",category:"Category",severity:"Severity",generated:"Generated Ticket",copy:"Copy Ticket",output:"Generated ticket text will appear here."
+},
+Deutsch:{
+selected:"Deutsch",hero:"Tickets <span>routen</span>",sub:"Intelligente Ticket Klassifizierung für Support, Facility, Safety, Yard Operations, HR und IT Workflows.",
+title:"KI Ticket Klassifizierer",panel:"Beschreibe das Problem. Das Tool empfiehlt die passende Abteilung und erstellt einen sauberen Tickettext.",
+placeholder:"Schreibe das Ticket Problem hier hinein...",analyze:"Ticket analysieren",reset:"Neu starten",classified:"Erkannte Abteilung",
+not:"Nicht analysiert",reason:"Gib eine Ticket Beschreibung ein und klicke auf Ticket analysieren.",department:"Abteilung",priority:"Priorität",category:"Kategorie",severity:"Schweregrad",generated:"Generiertes Ticket",copy:"Ticket kopieren",output:"Der generierte Tickettext erscheint hier."
+},
+Türkçe:{
+selected:"Türkçe",hero:"Ticket <span>Yönlendirme</span>",sub:"Support, Facility, Safety, Yard Operations, HR ve IT süreçleri için akıllı ticket sınıflandırması.",
+title:"AI Ticket Sınıflandırıcı",panel:"Sorunu açıklayın. Araç doğru departmanı önerir ve temiz bir ticket metni oluşturur.",
+placeholder:"Ticket sorununu buraya yazın...",analyze:"Ticket Analiz Et",reset:"Baştan Başla",classified:"Tespit Edilen Departman",
+not:"Analiz edilmedi",reason:"Bir ticket açıklaması girin ve Ticket Analiz Et butonuna tıklayın.",department:"Departman",priority:"Öncelik",category:"Kategori",severity:"Şiddet",generated:"Oluşturulan Ticket",copy:"Ticket Kopyala",output:"Oluşturulan ticket metni burada görünecek."
+},
+Français:{
+selected:"Français",hero:"Routage <span>Tickets</span>",sub:"Classification intelligente des tickets pour support, facility, sécurité, opérations yard, RH et IT.",
+title:"Classificateur de tickets IA",panel:"Décrivez le problème. L’outil recommande le bon département et génère un texte de ticket propre.",
+placeholder:"Écrivez le problème ici...",analyze:"Analyser",reset:"Recommencer",classified:"Département identifié",
+not:"Non analysé",reason:"Saisissez une description puis cliquez sur Analyser.",department:"Département",priority:"Priorité",category:"Catégorie",severity:"Sévérité",generated:"Ticket généré",copy:"Copier",output:"Le texte généré apparaîtra ici."
+},
+Español:{
+selected:"Español",hero:"Enrutando <span>Tickets</span>",sub:"Clasificación inteligente de tickets para soporte, facility, safety, yard operations, RRHH e IT.",
+title:"Clasificador de Tickets IA",panel:"Describe el problema. La herramienta recomienda el departamento correcto y crea un texto limpio.",
+placeholder:"Escribe el problema aquí...",analyze:"Analizar Ticket",reset:"Reiniciar",classified:"Departamento clasificado",
+not:"No analizado",reason:"Introduce una descripción y haz clic en Analizar Ticket.",department:"Departamento",priority:"Prioridad",category:"Categoría",severity:"Severidad",generated:"Ticket generado",copy:"Copiar Ticket",output:"El texto generado aparecerá aquí."
+}
+};
+
 ticketInput.addEventListener("input",()=>counter.innerText=ticketInput.value.length);
+
+function toggleLanguageMenu(){
+document.getElementById("languageMenu").classList.toggle("open");
+renderLanguages(languages);
+document.getElementById("languageSearch").focus();
+}
+
+function renderLanguages(list){
+const box=document.getElementById("languageList");
+box.innerHTML="";
+list.forEach(lang=>{
+const item=document.createElement("div");
+item.className="language-item";
+item.innerText=lang;
+item.onclick=()=>selectLanguage(lang);
+box.appendChild(item);
+});
+}
+
+function filterLanguages(){
+const q=document.getElementById("languageSearch").value.toLowerCase();
+renderLanguages(languages.filter(l=>l.toLowerCase().includes(q)));
+}
+
+function selectLanguage(lang){
+const t=translations[lang]||translations.English;
+document.getElementById("selectedLanguage").innerText=t.selected;
+document.getElementById("heroTitle").innerHTML=t.hero;
+document.getElementById("heroSubtitle").innerText=t.sub;
+document.getElementById("panelTitle").innerText=t.title;
+document.getElementById("panelSubtitle").innerText=t.panel;
+ticketInput.placeholder=t.placeholder;
+document.getElementById("analyzeBtn").innerText=t.analyze;
+document.getElementById("resetBtn").innerText=t.reset;
+document.getElementById("classifiedLabel").innerText=t.classified;
+document.getElementById("departmentLabel").innerText=t.department;
+document.getElementById("priorityLabel").innerText=t.priority;
+document.getElementById("categoryLabel").innerText=t.category;
+document.getElementById("severityLabel").innerText=t.severity;
+document.getElementById("generatedLabel").innerText=t.generated;
+document.getElementById("copyBtn").innerText=t.copy;
+
+if(document.getElementById("metricDepartment").innerText==="-"){
+document.getElementById("department").innerText=t.not;
+document.getElementById("reason").innerText=t.reason;
+document.getElementById("ticketOutput").innerText=t.output;
+}
+
+document.getElementById("languageMenu").classList.remove("open");
+}
+
+document.addEventListener("click",e=>{
+const box=document.querySelector(".language-box");
+if(!box.contains(e.target))document.getElementById("languageMenu").classList.remove("open");
+});
 
 function analyzeTicket(){
 const raw=ticketInput.value.trim();
 const text=raw.toLowerCase();
-
 if(!raw){alert("Please enter a ticket description first.");return;}
 
 let department="General Support",priority="Low",category="General Request",severity="Low",confidence="65%",icon="🏢";
 let reason="No specific routing keyword was detected. The ticket should be reviewed by general support.";
 
-if(has(text,["klo","klodeckel","toilette","toilet","wc","wasser","waschbecken","licht","lampe","tür","door","kaputt","defekt","broken","reparatur","gebäude","facility","heizung","klima","boden"])){
+if(has(text,["klo","klodeckel","toilette","toilet","wc","wasser","licht","tür","door","kaputt","defekt","broken","reparatur","facility"])){
 department="RME / Facility";priority="Medium";category="Building Maintenance";severity="Medium";confidence="92%";icon="🏭";
 reason="The issue is related to building maintenance, sanitary facilities or physical infrastructure.";
 }
-
-if(has(text,["netzwerk","internet","wifi","wlan","laptop","computer","drucker","printer","scanner","login","account","passwort","password","zugriff","access","vpn","software"])){
+if(has(text,["netzwerk","internet","wifi","wlan","laptop","computer","drucker","printer","scanner","login","account","passwort","password","access"])){
 department="IT Support";priority="Medium";category="IT Issue";severity="Medium";confidence="90%";icon="💻";
 reason="The issue is related to IT hardware, software, network, login or access.";
 }
-
-if(has(text,["unfall","verletzung","injury","safety","unsafe","hazard","gefahr","near miss","first aid","sturz","notfall"])){
+if(has(text,["unfall","verletzung","injury","safety","unsafe","hazard","gefahr","near miss","sturz","notfall"])){
 department="Safety";priority="High";category="Safety Incident";severity="High";confidence="95%";icon="⚠️";
 reason="The issue indicates a possible safety risk, injury, unsafe condition or emergency.";
 }
-
-if(has(text,["fahrer","driver","trailer","vrid","yard","dock","gate","check in","check-in","late departure","arrival","carrier","seal","plombe","loading","departure"])){
+if(has(text,["fahrer","driver","trailer","vrid","yard","dock","gate","check in","carrier","seal","loading","departure"])){
 department="TOM / Yard Team";priority="Medium";category="Yard Operation";severity="Medium";confidence="91%";icon="🚛";
 reason="The ticket is related to drivers, trailers, VRIDs, yard, dock, gate or TOM operations.";
 }
@@ -469,8 +593,7 @@ document.getElementById("severity").innerText=severity;
 document.getElementById("confidence").innerText="Confidence: "+confidence;
 document.getElementById("reason").innerText=reason;
 
-const clean=raw.replace(/\s+/g," ").trim();
-const short=clean.length>60?clean.substring(0,60)+"...":clean;
+const short=raw.length>60?raw.substring(0,60)+"...":raw;
 
 document.getElementById("ticketOutput").innerText=
 `Subject: ${department} | ${short}
@@ -500,22 +623,22 @@ Please review this issue and take the required next steps.`;
 function resetForm(){
 ticketInput.value="";
 counter.innerText="0";
+const lang=document.getElementById("selectedLanguage").innerText;
+selectLanguage(lang);
 document.getElementById("departmentIcon").innerText="🏢";
-document.getElementById("department").innerText="Not analyzed";
 document.getElementById("metricDepartment").innerText="-";
 document.getElementById("priority").innerText="-";
 document.getElementById("category").innerText="-";
 document.getElementById("severity").innerText="-";
 document.getElementById("confidence").innerText="Confidence: 0%";
-document.getElementById("reason").innerText="Enter a ticket description and click Analyze Ticket.";
-document.getElementById("ticketOutput").innerText="Generated ticket text will appear here.";
 }
 
 function copyTicket(){
-const output=document.getElementById("ticketOutput").innerText;
-navigator.clipboard.writeText(output);
+navigator.clipboard.writeText(document.getElementById("ticketOutput").innerText);
 alert("Ticket copied.");
 }
+
+renderLanguages(languages);
 </script>
 
 </body>
